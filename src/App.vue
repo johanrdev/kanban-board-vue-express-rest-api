@@ -10,18 +10,28 @@
             :status="column.status" :data="column.data" :data-index="index" @change-status="onStatusChanged" />
         </transition-group>
       </section>
+
+      <KanbanModal>
+        <template v-slot:header>
+          <h2 class="text-xl">Add item</h2>
+        </template>
+
+        <p>Content</p>
+      </KanbanModal>
     </div>
   </transition>
 </template>
 <script>
 import { computed, ref } from 'vue'
 import KanbanColumn from './components/KanbanColumn.vue'
+import KanbanModal from './components/KanbanModal.vue'
 import { uuid } from 'vue-uuid'
 import gsap from 'gsap'
 
 export default {
   components: {
-    KanbanColumn
+    KanbanColumn,
+    KanbanModal
   },
   setup() {
     const columns = ref([
@@ -94,6 +104,7 @@ export default {
 
 #app {
   font-family: Poppins;
+  height: 200vh;
 }
 
 .fade-enter-from,
