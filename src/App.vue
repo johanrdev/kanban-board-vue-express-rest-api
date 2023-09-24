@@ -1,8 +1,8 @@
 <template lang="html">
   <section class="max-w-5xl mx-auto mt-24 mb-12 grid md:grid-cols-3 gap-4">
-    <KanbanColumn name="Todo" color="#6366f1" :data="todo" />
-    <KanbanColumn name="In Progress" color="#f43f5e" :data="progress" />
-    <KanbanColumn name="Complete" color="#10b981" :data="complete" />
+    <KanbanColumn name="Todo" color="#6366f1" status="todo" :data="todo" @change-status="onStatusChanged" />
+    <KanbanColumn name="In Progress" color="#f43f5e" status="progress" :data="progress" @change-status="onStatusChanged" />
+    <KanbanColumn name="Complete" color="#10b981" status="complete" :data="complete" @change-status="onStatusChanged" />
   </section>
 </template>
 <script>
@@ -15,7 +15,7 @@ export default {
     KanbanColumn
   },
   setup() {
-    const data = ref([
+    const items = ref([
       { id: uuid.v1(), name: 'My first todo', status: null },
       { id: uuid.v1(), name: 'My second todo', status: null },
       { id: uuid.v1(), name: 'My third todo', status: null },
@@ -28,14 +28,20 @@ export default {
       { id: uuid.v1(), name: 'My tenth todo', status: null }
     ])
 
-    const todo = computed(() => data.value.filter(i => i.status === null))
-    const progress = computed(() => data.value.filter(i => i.status === 'progress'))
-    const complete = computed(() => data.value.filter(i => i.status === 'complete'))
+    const todo = computed(() => items.value.filter(i => i.status === null))
+    const progress = computed(() => items.value.filter(i => i.status === 'progress'))
+    const complete = computed(() => items.value.filter(i => i.status === 'complete'))
+
+    const onStatusChanged = (data) => {
+      const item = items.value.find(i => i.id === data.id)
+      item.status = data.status === 'todo' ? null : data.status
+    }
 
     return {
       todo,
       progress,
-      complete
+      complete,
+      onStatusChanged
     }
   }
 }

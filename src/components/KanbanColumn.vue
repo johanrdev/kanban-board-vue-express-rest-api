@@ -15,8 +15,8 @@
 </template>
 <script>
 export default {
-  props: ['name', 'color', 'data'],
-  setup(props) {
+  props: ['name', 'color', 'status', 'data'],
+  setup(props, { emit }) {
     const startDrag = (event, item) => {
       event.dataTransfer.setData('id', item.id)
       event.dataTransfer.effectAllowed = 'move'
@@ -25,7 +25,7 @@ export default {
 
     const onDrop = (event) => {
       const id = event.dataTransfer.getData('id')
-      console.log('id:', id)
+      emit('changeStatus', { id, status: props.status })
     }
 
     return {
