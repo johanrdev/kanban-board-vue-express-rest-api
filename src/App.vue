@@ -17,7 +17,11 @@
           <h2 class="text-xl">Add item</h2>
         </template>
 
-        <p>Content</p>
+        <div class="flex flex-col">
+          <input type="text" id="name" v-model="newItem.name" class="p-2 mb-2 border rounded" placeholder="Name" />
+          <button type="button" class="p-2 bg-emerald-500 text-white rounded" @click="addItem">Add</button>
+        </div>
+
       </KanbanModal>
     </div>
   </transition>
@@ -36,6 +40,18 @@ export default {
   },
   setup() {
     const addItemModal = ref(null)
+    const newItem = ref({})
+    const addItem = () => {
+      newItem.value.id = uuid.v1()
+      newItem.value.status = null
+      items.value.push(newItem.value)
+      newItem.value = {}
+      addItemModal.value.modal.close()
+    }
+
+    const todo = computed(() => items.value.filter(i => i.status === null))
+    const progress = computed(() => items.value.filter(i => i.status === 'progress'))
+    const complete = computed(() => items.value.filter(i => i.status === 'complete'))
 
     const columns = ref([
       {
@@ -43,21 +59,21 @@ export default {
         name: 'Todo',
         color: '#6366f1',
         status: null,
-        data: computed(() => items.value.filter(i => i.status === null))
+        data: todo
       },
       {
         id: uuid.v1(),
         name: 'In Progress',
         color: '#f43f5e',
         status: 'progress',
-        data: computed(() => items.value.filter(i => i.status === 'progress'))
+        data: progress
       },
       {
         id: uuid.v1(),
         name: 'Complete',
         color: '#10b981',
         status: 'complete',
-        data: computed(() => items.value.filter(i => i.status === 'complete'))
+        data: complete
       }
     ])
     const items = ref([
@@ -65,12 +81,7 @@ export default {
       { id: uuid.v1(), name: 'My second todo', status: null },
       { id: uuid.v1(), name: 'My third todo', status: null },
       { id: uuid.v1(), name: 'My fourth todo', status: null },
-      { id: uuid.v1(), name: 'My fifth todo', status: null },
-      { id: uuid.v1(), name: 'My sixth todo', status: null },
-      { id: uuid.v1(), name: 'My seventh todo', status: null },
-      { id: uuid.v1(), name: 'My eighth todo', status: null },
-      { id: uuid.v1(), name: 'My ninth todo', status: null },
-      { id: uuid.v1(), name: 'My tenth todo', status: null }
+      { id: uuid.v1(), name: 'My fifth todo', status: null }
     ])
 
     const onStatusChanged = (data) => {
@@ -95,6 +106,8 @@ export default {
 
     return {
       addItemModal,
+      newItem,
+      addItem,
       columns,
       onStatusChanged,
       beforeEnter,
