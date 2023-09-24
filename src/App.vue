@@ -1,5 +1,5 @@
 <template lang="html">
-  <section class="max-w-5xl mx-auto mt-24 mb-12 grid md:grid-cols-3 gap-4">
+  <section class="max-w-5xl mx-2 lg:mx-auto mt-24 mb-12 grid md:grid-cols-3 gap-4">
     <KanbanColumn name="Todo" color="#6366f1" status="todo" :data="todo" @change-status="onStatusChanged" />
     <KanbanColumn name="In Progress" color="#f43f5e" status="progress" :data="progress" @change-status="onStatusChanged" />
     <KanbanColumn name="Complete" color="#10b981" status="complete" :data="complete" @change-status="onStatusChanged" />

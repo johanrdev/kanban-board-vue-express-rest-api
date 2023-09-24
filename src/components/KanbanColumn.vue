@@ -1,17 +1,20 @@
 <template lang="html">
-  <section class="flex flex-col border p-2">
-    <h2 class="text-xl mb-2" v-if="name">{{ name }} ({{ data.length }})</h2>
+  <transition appear name="fade">
+    <section class="flex flex-col border rounded p-2">
+      <h2 class="text-xl mb-2" v-if="name">{{ name }} ({{ data.length }})</h2>
 
-    <transition-group name="fade" tag="ul" class="relative grow" @drop="onDrop($event)" @dragenter.prevent @dragover.prevent>
-      <li v-for="item in data" :key="item.id"
-        class="border border-l-8 rounded p-2 mb-1 last:mb-0 left-0 right-0 cursor-move select-none"
-        :style="{ borderLeftColor: color }" v-if="data.length" draggable="true" @dragstart="startDrag($event, item)">
-        <span class="block mb-4">{{ item.name }}</span>
-        <span class="block text-xs text-right text-gray-400">{{ item.id }}</span>
-      </li>
-      <li class="border border-l-8 rounded p-2 mb-1 last:mb-0 left-0 right-0" v-else>No data</li>
-    </transition-group>
-  </section>
+      <transition-group name="fade" tag="ul" class="relative grow h-[300px] lg:h-[500px] overflow-y-auto" @drop="onDrop($event)" @dragenter.prevent
+        @dragover.prevent>
+        <li v-for="item in data" :key="item.id"
+          class="border border-l-8 rounded p-2 mb-1 last:mb-0 left-0 right-0 cursor-move select-none"
+          :style="{ borderLeftColor: color }" v-if="data.length" draggable="true" @dragstart="startDrag($event, item)">
+          <span class="block mb-4">{{ item.name }}</span>
+          <span class="block text-xs text-right text-gray-400">{{ item.id }}</span>
+        </li>
+        <li class="border border-l-8 rounded p-2 mb-1 last:mb-0 left-0 right-0" v-else>No data</li>
+      </transition-group>
+    </section>
+  </transition>
 </template>
 <script>
 export default {
@@ -49,7 +52,7 @@ export default {
 .fade-move,
 .fade-enter-active,
 .fade-leave-active {
-  transition: all .4s ease-in-out;
+  transition: all .5s ease-in-out;
 }
 
 .fade-leave-active {
