@@ -4,6 +4,7 @@
       <header class="mt-8 md:mt-12">
         <span class="block text-3xl md:text-4xl text-gray-300 text-center">VueKanbanBoard</span>
       </header>
+      <button @click="addItemModal.modal.toggle">Toggle Modal</button>
       <section class="my-8 grid md:grid-cols-3 gap-4">
         <transition-group appear @before-enter="beforeEnter" @enter="enter" :css="false">
           <KanbanColumn v-for="(column, index) in columns" :key="column.id" :name="column.name" :color="column.color"
@@ -11,7 +12,7 @@
         </transition-group>
       </section>
 
-      <KanbanModal>
+      <KanbanModal ref="addItemModal">
         <template v-slot:header>
           <h2 class="text-xl">Add item</h2>
         </template>
@@ -34,6 +35,8 @@ export default {
     KanbanModal
   },
   setup() {
+    const addItemModal = ref(null)
+
     const columns = ref([
       {
         id: uuid.v1(),
@@ -91,6 +94,7 @@ export default {
     }
 
     return {
+      addItemModal,
       columns,
       onStatusChanged,
       beforeEnter,
