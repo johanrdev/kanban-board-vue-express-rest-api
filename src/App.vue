@@ -8,6 +8,7 @@
 <script>
 import { computed, ref } from 'vue'
 import KanbanColumn from './components/KanbanColumn.vue'
+import { uuid } from 'vue-uuid'
 
 export default {
   components: {
@@ -15,16 +16,16 @@ export default {
   },
   setup() {
     const data = ref([
-    { id: 0, name: 'My first todo', status: null },
-      { id: 1, name: 'My second todo', status: null },
-      { id: 2, name: 'My third todo', status: null },
-      { id: 3, name: 'My fourth todo', status: null },
-      { id: 4, name: 'My fifth todo', status: null }, 
-      { id: 5, name: 'My sixth todo', status: null },
-      { id: 6, name: 'My seventh todo', status: null },
-      { id: 7, name: 'My eighth todo', status: null },
-      { id: 8, name: 'My ninth todo', status: null },
-      { id: 9, name: 'My tenth todo', status: null }
+      { id: uuid.v1(), name: 'My first todo', status: null },
+      { id: uuid.v1(), name: 'My second todo', status: null },
+      { id: uuid.v1(), name: 'My third todo', status: null },
+      { id: uuid.v1(), name: 'My fourth todo', status: null },
+      { id: uuid.v1(), name: 'My fifth todo', status: null },
+      { id: uuid.v1(), name: 'My sixth todo', status: null },
+      { id: uuid.v1(), name: 'My seventh todo', status: null },
+      { id: uuid.v1(), name: 'My eighth todo', status: null },
+      { id: uuid.v1(), name: 'My ninth todo', status: null },
+      { id: uuid.v1(), name: 'My tenth todo', status: null }
     ])
 
     const todo = computed(() => data.value.filter(i => i.status === null))
