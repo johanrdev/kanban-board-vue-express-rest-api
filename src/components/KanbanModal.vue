@@ -5,12 +5,12 @@
       <div class="absolute left-0 top-0 right-0 bottom-0 bg-gray-950 opacity-70"></div>
       <!-- Container -->
       <div
-        class="absolute left-1/2 -translate-x-1/2 top-1/4 max-w-xl w-full bg-white rounded shadow-xl overflow-hidden">
-        <header class="flex justify-between p-4 bg-gray-200">
-          <slot name="header"></slot>
+        class="absolute left-1/2 -translate-x-1/2 top-1/4 max-w-xl w-full bg-white rounded shadow-xl overflow-hidden" v-click-outside="modal.close">
+        <header class="flex justify-between p-4 bg-gray-200 text-gray-700">
+          <h2 class="text-xl">{{ title }}</h2>
 
           <button type="button" @click="modal.close">
-            Close
+            <font-awesome-icon :icon="['fas', 'close']"></font-awesome-icon>
           </button>
         </header>
 
@@ -25,6 +25,7 @@
 import { ref } from 'vue'
 
 export default {
+  props: ['title'],
   setup() {
     const modal = ref({
       show: false,

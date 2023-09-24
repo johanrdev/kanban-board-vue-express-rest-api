@@ -5,7 +5,9 @@
         <span class="block text-3xl md:text-4xl text-gray-300 text-center">VueKanbanBoard</span>
       </header>
       <nav class="flex justify-center md:justify-end">
-        <button @click="addItemModal.modal.toggle" class="p-2 bg-indigo-400 text-white rounded transition-all">Add new item</button>
+        <button @click="addItemModal.modal.toggle" class="w-12 h-12 bg-indigo-400 text-white rounded transition-all">
+        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+      </button>
       </nav>
       <section class="mt-4 mb-8 grid md:grid-cols-3 gap-4">
         <transition-group appear @before-enter="beforeEnter" @enter="enter" :css="false">
@@ -14,11 +16,7 @@
         </transition-group>
       </section>
 
-      <KanbanModal ref="addItemModal">
-        <template v-slot:header>
-          <h2 class="text-xl">Add item</h2>
-        </template>
-
+      <KanbanModal title="Add item" ref="addItemModal">
         <form @submit.prevent="addItem" class="flex flex-col">
           <input type="text" v-bind="name" v-model="newItem.name" placeholder="Name" autocomplete="off" class="p-2 border rounded" />
           <span class="text-sm text-red-500 text-right">{{ errors.name }}</span>
