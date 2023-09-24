@@ -17,10 +17,12 @@
           <h2 class="text-xl">Add item</h2>
         </template>
 
-        <div class="flex flex-col">
-          <input type="text" id="name" v-model="newItem.name" class="p-2 mb-2 border rounded" placeholder="Name" />
-          <button type="button" class="p-2 bg-emerald-500 text-white rounded" @click="addItem">Add</button>
-        </div>
+        <Form @submit="addItem" class="flex flex-col">
+          <!-- <input type="text" id="name" v-model="newItem.name"/> -->
+          <Field name="name" type="text" v-model="newItem.name" placeholder="Name"  class="p-2 mb-2 border rounded" />
+          <button type="submit" class="p-2 bg-emerald-500 text-white rounded">Add</button>
+          <ErrorMessage name="name" />
+        </Form>
 
       </KanbanModal>
     </div>
@@ -28,6 +30,7 @@
 </template>
 <script>
 import { computed, ref } from 'vue'
+import { Form, Field, ErrorMessage } from 'vee-validate'
 import KanbanColumn from './components/KanbanColumn.vue'
 import KanbanModal from './components/KanbanModal.vue'
 import { uuid } from 'vue-uuid'
@@ -35,6 +38,9 @@ import gsap from 'gsap'
 
 export default {
   components: {
+    Form,
+    Field,
+    ErrorMessage,
     KanbanColumn,
     KanbanModal
   },
