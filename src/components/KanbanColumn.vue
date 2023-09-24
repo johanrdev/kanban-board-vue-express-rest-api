@@ -1,16 +1,16 @@
 <template lang="html">
-  <section class="border p-2">
+  <section class="flex flex-col border p-2">
     <h2 class="text-xl mb-2" v-if="name">{{ name }} ({{ data.length }})</h2>
 
-    <ul @drop="onDrop($event)" @dragenter.prevent @dragover.prevent>
+    <transition-group name="fade" tag="ul" class="relative grow" @drop="onDrop($event)" @dragenter.prevent @dragover.prevent>
       <li v-for="item in data" :key="item.id"
-        class="border border-l-8 rounded flex flex-col p-2 mb-1 last:mb-0 cursor-move select-none"
+        class="border border-l-8 rounded p-2 mb-1 last:mb-0 left-0 right-0 cursor-move select-none"
         :style="{ borderLeftColor: color }" v-if="data.length" draggable="true" @dragstart="startDrag($event, item)">
-        <span class="mb-8">{{ item.name }}</span>
-        <span class="text-xs text-right text-gray-400">{{ item.id }}</span>
+        <span class="block mb-4">{{ item.name }}</span>
+        <span class="block text-xs text-right text-gray-400">{{ item.id }}</span>
       </li>
-      <li class="border border-l-8 rounded p-2 mb-1 last:mb-0" v-else>No data</li>
-    </ul>
+      <li class="border border-l-8 rounded p-2 mb-1 last:mb-0 left-0 right-0" v-else>No data</li>
+    </transition-group>
   </section>
 </template>
 <script>
@@ -35,4 +35,24 @@ export default {
   }
 }
 </script>
-<style lang="css"></style>
+<style lang="css">
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}
+
+.fade-move,
+.fade-enter-active,
+.fade-leave-active {
+  transition: all .4s ease-in-out;
+}
+
+.fade-leave-active {
+  position: absolute;
+}
+</style>
