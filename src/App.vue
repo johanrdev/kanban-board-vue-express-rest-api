@@ -30,4 +30,10 @@ export default {
   }
 }
 </script>
-<style lang="css"></style>
+<style lang="css">
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+#app {
+  font-family: Poppins;
+}
+</style>
