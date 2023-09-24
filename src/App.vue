@@ -1,9 +1,18 @@
 <template lang="html">
-  <section class="max-w-5xl mx-2 lg:mx-auto mt-24 mb-12 grid md:grid-cols-3 gap-4">
-    <KanbanColumn name="Todo" color="#6366f1" status="todo" :data="todo" @change-status="onStatusChanged" />
-    <KanbanColumn name="In Progress" color="#f43f5e" status="progress" :data="progress" @change-status="onStatusChanged" />
-    <KanbanColumn name="Complete" color="#10b981" status="complete" :data="complete" @change-status="onStatusChanged" />
-  </section>
+  <transition appear name="fade">
+    <div class="flex flex-col max-w-5xl mx-2 lg:mx-auto">
+      <header class="mt-8 md:mt-12">
+        <span class="block text-3xl md:text-4xl text-gray-300 text-center">VueKanbanBoard</span>
+      </header>
+      <section class="my-8 grid md:grid-cols-3 gap-4">
+        <KanbanColumn name="Todo" color="#6366f1" status="todo" :data="todo" @change-status="onStatusChanged" />
+        <KanbanColumn name="In Progress" color="#f43f5e" status="progress" :data="progress"
+          @change-status="onStatusChanged" />
+        <KanbanColumn name="Complete" color="#10b981" status="complete" :data="complete"
+          @change-status="onStatusChanged" />
+      </section>
+    </div>
+  </transition>
 </template>
 <script>
 import { computed, ref } from 'vue'
@@ -51,5 +60,25 @@ export default {
 
 #app {
   font-family: Poppins;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}
+
+.fade-move,
+.fade-enter-active,
+.fade-leave-active {
+  transition: all .5s ease-in-out;
+}
+
+.fade-leave-active {
+  position: absolute;
 }
 </style>
