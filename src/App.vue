@@ -15,7 +15,7 @@ export default {
   },
   setup() {
     const data = ref([
-      { id: 0, name: 'My first todo', status: null },
+    { id: 0, name: 'My first todo', status: null },
       { id: 1, name: 'My second todo', status: null },
       { id: 2, name: 'My third todo', status: null },
       { id: 3, name: 'My fourth todo', status: null },
