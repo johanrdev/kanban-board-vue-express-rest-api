@@ -1,11 +1,13 @@
 <template lang="html">
   <transition appear name="fade">
     <div class="flex flex-col max-w-5xl mx-2 lg:mx-auto">
-      <header class="mt-8 md:mt-12">
+      <header class="my-8 md:mt-12">
         <span class="block text-3xl md:text-4xl text-gray-300 text-center">VueKanbanBoard</span>
       </header>
-      <button @click="addItemModal.modal.toggle">Toggle Modal</button>
-      <section class="my-8 grid md:grid-cols-3 gap-4">
+      <nav class="flex justify-center md:justify-end">
+        <button @click="addItemModal.modal.toggle" class="p-2 bg-indigo-400 text-white rounded transition-all">Add new item</button>
+      </nav>
+      <section class="mt-4 mb-8 grid md:grid-cols-3 gap-4">
         <transition-group appear @before-enter="beforeEnter" @enter="enter" :css="false">
           <KanbanColumn v-for="(column, index) in columns" :key="column.id" :name="column.name" :color="column.color"
             :status="column.status" :data="column.data" :data-index="index" @change-status="onStatusChanged" />

@@ -5,7 +5,7 @@
       <div class="absolute left-0 top-0 right-0 bottom-0 bg-gray-950 opacity-70"></div>
       <!-- Container -->
       <div
-        class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 max-w-xl w-full bg-white rounded shadow-xl overflow-hidden">
+        class="absolute left-1/2 -translate-x-1/2 top-1/4 max-w-xl w-full bg-white rounded shadow-xl overflow-hidden">
         <header class="flex justify-between p-4 bg-gray-200">
           <slot name="header"></slot>
 
