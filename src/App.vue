@@ -17,30 +17,28 @@
           <h2 class="text-xl">Add item</h2>
         </template>
 
-        <Form @submit="addItem" class="flex flex-col">
-          <!-- <input type="text" id="name" v-model="newItem.name"/> -->
-          <Field name="name" type="text" v-model="newItem.name" placeholder="Name"  class="p-2 mb-2 border rounded" />
-          <button type="submit" class="p-2 bg-emerald-500 text-white rounded">Add</button>
-          <ErrorMessage name="name" />
-        </Form>
+        <form @submit.prevent="addItem" class="flex flex-col">
+          <input type="text" v-bind="name" v-model="newItem.name" placeholder="Name" autocomplete="off" class="p-2 border rounded" />
+          <span class="text-sm text-red-500 text-right">{{ errors.name }}</span>
 
+          <button type="submit" :disabled="!meta.valid" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all"
+            :class="{ 'bg-gray-400 text-gray-200 cursor-not-allowed': !meta.valid }">Add</button>
+        </form>
       </KanbanModal>
     </div>
   </transition>
 </template>
 <script>
 import { computed, ref } from 'vue'
-import { Form, Field, ErrorMessage } from 'vee-validate'
+import { useForm } from 'vee-validate'
 import KanbanColumn from './components/KanbanColumn.vue'
 import KanbanModal from './components/KanbanModal.vue'
 import { uuid } from 'vue-uuid'
 import gsap from 'gsap'
+import * as yup from 'yup'
 
 export default {
   components: {
-    Form,
-    Field,
-    ErrorMessage,
     KanbanColumn,
     KanbanModal
   },
@@ -51,9 +49,20 @@ export default {
       newItem.value.id = uuid.v1()
       newItem.value.status = null
       items.value.push(newItem.value)
+      resetForm()
       newItem.value = {}
       addItemModal.value.modal.close()
     }
+
+    const { meta, errors, defineInputBinds, resetForm } = useForm({
+      validationSchema: yup.object({
+        name: yup.string().min(3).required()
+      })
+    })
+    
+    const name = defineInputBinds('name', {
+      validateOnInput: true
+    })
 
     const todo = computed(() => items.value.filter(i => i.status === null))
     const progress = computed(() => items.value.filter(i => i.status === 'progress'))
@@ -82,12 +91,11 @@ export default {
         data: complete
       }
     ])
+
     const items = ref([
       { id: uuid.v1(), name: 'My first todo', status: null },
       { id: uuid.v1(), name: 'My second todo', status: null },
-      { id: uuid.v1(), name: 'My third todo', status: null },
-      { id: uuid.v1(), name: 'My fourth todo', status: null },
-      { id: uuid.v1(), name: 'My fifth todo', status: null }
+      { id: uuid.v1(), name: 'My third todo', status: null }
     ])
 
     const onStatusChanged = (data) => {
@@ -111,6 +119,9 @@ export default {
     }
 
     return {
+      meta,
+      errors,
+      name,
       addItemModal,
       newItem,
       addItem,
