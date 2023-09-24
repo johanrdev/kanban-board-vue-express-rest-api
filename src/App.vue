@@ -67,13 +67,15 @@ export default {
 
     const beforeEnter = (el) => {
       el.style.opacity = 0
+      el.style.transform = 'translateY(50px)'
     }
 
     const enter = (el, done) => {
       gsap.to(el, {
         opacity: 1,
-        duration: 2,
-        delay: el.dataset.index * 0.5,
+        y: 0,
+        duration: .75,
+        delay: el.dataset.index * .5,
         onComplete: done
       })
     }
