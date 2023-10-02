@@ -6,4 +6,6 @@ const db = {}
 db.Sequelize = Sequelize
 db.sequelize = sequelize
 
+db.todos = require('../models/todo.model')(Sequelize, sequelize)
+
 module.exports = db

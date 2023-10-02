@@ -6,6 +6,12 @@ module.exports = (db) => {
       db.sequelize.sync({ force: true })
         .then(() => {
           console.log('Successfully created the database tables.')
+          
+          db.todos.create({ content: 'My first todo' })
+          db.todos.create({ content: 'My second todo', status: 'progress' })
+          db.todos.create({ content: 'My third todo' })
+          db.todos.create({ content: 'My fourth todo' })
+          db.todos.create({ content: 'My fifth todo' })
         })
     })
     .catch(() => {
