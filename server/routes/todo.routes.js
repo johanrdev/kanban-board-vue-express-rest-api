@@ -1,13 +1,14 @@
 module.exports = (app) => {
   const baseUrl = '/api/todos'
+  const controller = require('../controllers/todo.controller')
   const router = require('express').Router()
 
-  router.get('/', (req, res) => res.send('Get all todo items'))
-  router.get('/:id', (req, res) => res.send('Get a single todo item'))
-  router.post('/', (req, res) => res.send('Create a new todo item'))
-  router.put('/:id', (req, res) => res.send('Update a single todo item'))
-  router.delete('/:id', (req, res) => res.send('Delete a single todo item'))
-  router.delete('/', (req, res) => res.send('Delete all todo items'))
+  router.get('/', controller.findAll)
+  router.get('/:id', controller.findOne)
+  router.post('/', controller.create)
+  router.put('/:id', controller.update)
+  router.delete('/:id', controller.delete)
+  router.delete('/', controller.deleteAll)
 
   app.use(baseUrl, router)
 }
