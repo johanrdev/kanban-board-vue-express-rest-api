@@ -62,23 +62,10 @@ exports.create = (req, res) => {
 // Update a single todo item
 exports.update = (req, res) => {
   const id = req.params.id
-  let status = null
 
-  if (!req.body.content) {
-    return res.status(400)
-      .send({
-        messsage: 'Content cannot be empty.'
-      })
-  }
-
-  if (typeof req.body.status === 'string' || req.body.status instanceof String) {
-    if (req.body.status === 'progress' || req.body.status === 'complete') {
-      status = req.body.status
-    }
-  }
-
-  Todo.update({ content: req.body.content, status }, { where: { id } })
+  Todo.update({ content: req.body.content, status: req.body.status }, { where: { id } })
     .then((result) => {
+
       if (result == 1) {
         res.send({
           message: 'Successfully updated the todo item.'

@@ -18,8 +18,8 @@
 
       <KanbanModal title="Add item" ref="addItemModal">
         <form @submit.prevent="addItem" class="flex flex-col">
-          <input type="text" v-bind="name" v-model="newItem.name" placeholder="Name" autocomplete="off" class="p-2 border rounded" />
-          <span class="text-sm text-red-500 text-right">{{ errors.name }}</span>
+          <input type="text" v-bind="content" v-model="newItem.content" placeholder="Content" autocomplete="off" class="p-2 border rounded" />
+          <span class="text-sm text-red-500 text-right">{{ errors.content }}</span>
 
           <button type="submit" :disabled="!meta.valid" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all"
             :class="{ 'bg-gray-400 text-gray-200 cursor-not-allowed': !meta.valid }">Add</button>
@@ -29,13 +29,14 @@
   </transition>
 </template>
 <script>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useForm } from 'vee-validate'
 import KanbanColumn from './components/KanbanColumn.vue'
 import KanbanModal from './components/KanbanModal.vue'
 import { uuid } from 'vue-uuid'
 import gsap from 'gsap'
 import * as yup from 'yup'
+import TodoDataService from './services/todo.service'
 
 export default {
   components: {
@@ -56,11 +57,11 @@ export default {
 
     const { meta, errors, defineInputBinds, resetForm } = useForm({
       validationSchema: yup.object({
-        name: yup.string().min(3).required()
+        content: yup.string().min(3).required()
       })
     })
     
-    const name = defineInputBinds('name', {
+    const content = defineInputBinds('content', {
       validateOnInput: true
     })
 
@@ -92,15 +93,26 @@ export default {
       }
     ])
 
-    const items = ref([
-      { id: uuid.v1(), name: 'My first todo', status: null },
-      { id: uuid.v1(), name: 'My second todo', status: null },
-      { id: uuid.v1(), name: 'My third todo', status: null }
-    ])
+    const items = ref([])
+
+    onMounted(() => {
+      TodoDataService.getTodos()
+        .then((result) => {
+          items.value = result.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    })
 
     const onStatusChanged = (data) => {
-      const item = items.value.find(i => i.id === data.id)
+      const item = items.value.find(i => i.id == data.id)
       item.status = data.status
+
+      TodoDataService.updateTodo(data.id, { content: item.content, status: data.status })
+        .catch((error) => {
+          console.error(error)
+        })
     }
 
     const beforeEnter = (el) => {
@@ -121,7 +133,7 @@ export default {
     return {
       meta,
       errors,
-      name,
+      content,
       addItemModal,
       newItem,
       addItem,
