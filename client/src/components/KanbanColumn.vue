@@ -1,6 +1,6 @@
 <template lang="html">
   <section class="flex flex-col border rounded bg-gray-100 p-2">
-    <h2 class="text-md text-center text-gray-500 uppercase tracking-widest mb-4" v-if="content">{{ content }} ({{
+    <h2 class="text-md text-center text-gray-500 uppercase tracking-widest mb-4" v-if="name">{{ name }} ({{
       data.length }})</h2>
 
     <transition-group name="fade" tag="ul" class="relative grow h-[300px] lg:h-[500px] overflow-y-auto transition-all"
@@ -18,7 +18,7 @@
 </template>
 <script>
 export default {
-  props: ['content', 'color', 'status', 'data'],
+  props: ['name', 'color', 'status', 'data'],
   setup(props, { emit }) {
     const startDrag = (event, item) => {
       event.dataTransfer.setData('id', item.id)

@@ -65,7 +65,6 @@ exports.update = (req, res) => {
 
   Todo.update({ content: req.body.content, status: req.body.status }, { where: { id } })
     .then((result) => {
-
       if (result == 1) {
         res.send({
           message: 'Successfully updated the todo item.'

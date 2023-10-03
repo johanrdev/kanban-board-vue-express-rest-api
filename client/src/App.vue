@@ -20,18 +20,23 @@
       <!-- Add new todo -->
       <KanbanModal title="Add item" ref="addItemModal">
         <form @submit.prevent="addItem" class="flex flex-col">
-          <input type="text" v-bind="content" v-model="newItem.content" placeholder="Content" autocomplete="off"
+          <input type="text" v-bind="newContentInput" v-model="newItem.content" placeholder="Content" autocomplete="off"
             class="p-2 border rounded" />
           <span class="text-sm text-red-500 text-right">{{ errors.content }}</span>
 
-          <button type="submit" :disabled="!meta.valid" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all"
-            :class="{ 'bg-gray-400 text-gray-200 cursor-not-allowed': !meta.valid }">Add</button>
+          <button type="submit" :disabled="!addMeta.valid" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all"
+            :class="{ 'bg-gray-400 text-gray-200 cursor-not-allowed': !addMeta.valid }">Add</button>
         </form>
       </KanbanModal>
 
       <!-- Edit todo -->
-      <KanbanModal title="Edit item" ref="editItemModal">
-        <span>Todo ID: {{ contextMenuObject.id }}</span>
+      <KanbanModal title="Edit item" ref="editItemModal" @modal-toggled="onEditModalToggled">
+        <form @submit.prevent="updateItem" class="flex flex-col">
+          <input type="text" v-model="editItem.content" placeholder="Content" autocomplete="off"
+            class="p-2 border rounded" />
+
+          <button type="submit" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all">Update</button>
+        </form>
       </KanbanModal>
 
       <!-- Context menu -->
@@ -43,14 +48,14 @@
   </transition>
 </template>
 <script>
+import * as yup from 'yup'
+import gsap from 'gsap'
+import { uuid } from 'vue-uuid'
+import { useForm, useField } from 'vee-validate'
 import { computed, onMounted, ref } from 'vue'
-import { useForm } from 'vee-validate'
 import KanbanColumn from './components/KanbanColumn.vue'
 import KanbanModal from './components/KanbanModal.vue'
 import ContextMenu from './components/ContextMenu.vue'
-import { uuid } from 'vue-uuid'
-import gsap from 'gsap'
-import * as yup from 'yup'
 import TodoDataService from './services/todo.service'
 
 export default {
@@ -72,7 +77,6 @@ export default {
           resetForm()
           newItem.value = {}
           addItemModal.value.modal.close()
-
           loadTodos()
         })
         .catch((error) => {
@@ -80,13 +84,26 @@ export default {
         })
     }
 
-    const { meta, errors, defineInputBinds, resetForm } = useForm({
+    const updateItem = () => {
+      console.log(editItem.id)
+      TodoDataService.updateTodo(editItem.value.id, editItem.value)
+        .then(() => {
+          editItemModal.value.modal.close()
+          loadTodos()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
+
+
+    const { meta: addMeta, errors, defineInputBinds, resetForm } = useForm({
       validationSchema: yup.object({
         content: yup.string().min(3).required()
       })
     })
 
-    const content = defineInputBinds('content', {
+    const newContentInput = defineInputBinds('content', {
       validateOnInput: true
     })
 
@@ -121,6 +138,7 @@ export default {
     const items = ref([])
 
     const contextMenu = ref(null)
+
     const contextMenuObject = ref({
       id: null,
       position: { x: 0, y: 0 },
@@ -145,6 +163,18 @@ export default {
       item.status = data.status
 
       TodoDataService.updateTodo(data.id, { content: item.content, status: data.status })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
+
+    const onEditModalToggled = () => {
+      TodoDataService.getTodo(contextMenuObject.value.id)
+        .then((result) => {
+          editItem.value.id = result.data.id
+          editItem.value.content = result.data.content
+          editItem.value.status = result.data.status
+        })
         .catch((error) => {
           console.error(error)
         })
@@ -177,19 +207,21 @@ export default {
     })
 
     return {
-      meta,
+      addMeta,
       errors,
-      content,
+      newContentInput,
       addItemModal,
       editItemModal,
       newItem,
       editItem,
       addItem,
+      updateItem,
       columns,
       contextMenu,
       contextMenuObject,
       onOpenContextMenu,
       onStatusChanged,
+      onEditModalToggled,
       beforeEnter,
       enter
     }

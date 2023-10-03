@@ -26,11 +26,15 @@ import { ref } from 'vue'
 
 export default {
   props: ['title'],
-  setup() {
+  setup(_, { emit }) {
     const modal = ref({
       show: false,
       close: () => modal.value.show = false,
-      toggle: () => modal.value.show = !modal.value.show
+      toggle: () => {
+        modal.value.show = !modal.value.show
+
+        emit('modalToggled', modal.value.show)
+      }
     })
 
     return {
