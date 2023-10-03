@@ -16,6 +16,10 @@ class TodoDataService {
   updateTodo(id, data) {
     return config.put(`/todos/${id}`, data)
   }
+
+  deleteTodo(id) {
+    return config.delete(`/todos/${id}`)
+  }
 }
 
 export default new TodoDataService()

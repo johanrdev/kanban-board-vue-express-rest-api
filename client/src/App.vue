@@ -17,7 +17,7 @@
         </transition-group>
       </section>
 
-      <!-- Add new todo -->
+      <!-- Add new todo modal -->
       <KanbanModal title="Add item" ref="addItemModal">
         <form @submit.prevent="addItem" class="flex flex-col">
           <input type="text" v-bind="newContentInput" v-model="newItem.content" placeholder="Content" autocomplete="off"
@@ -29,13 +29,22 @@
         </form>
       </KanbanModal>
 
-      <!-- Edit todo -->
+      <!-- Edit todo modal -->
       <KanbanModal title="Edit item" ref="editItemModal" @modal-toggled="onEditModalToggled">
         <form @submit.prevent="updateItem" class="flex flex-col">
           <input type="text" v-model="editItem.content" placeholder="Content" autocomplete="off"
             class="p-2 border rounded" />
 
           <button type="submit" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all">Update</button>
+        </form>
+      </KanbanModal>
+
+      <!-- Confirm action modal -->
+      <KanbanModal title="Confirm action" ref="confirmActionModal">
+        <form @submit.prevent="deleteItem" class="flex flex-col">
+          <p class="text-center">Please confirm this action.</p>
+
+          <button type="submit" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all">Confirm</button>
         </form>
       </KanbanModal>
 
@@ -67,6 +76,7 @@ export default {
   setup() {
     const addItemModal = ref(null)
     const editItemModal = ref(null)
+    const confirmActionModal = ref(null)
 
     const newItem = ref({})
     const editItem = ref({})
@@ -85,7 +95,6 @@ export default {
     }
 
     const updateItem = () => {
-      console.log(editItem.id)
       TodoDataService.updateTodo(editItem.value.id, editItem.value)
         .then(() => {
           editItemModal.value.modal.close()
@@ -96,6 +105,16 @@ export default {
         })
     }
 
+    const deleteItem = () => {
+      TodoDataService.deleteTodo(contextMenuObject.value.id)
+        .then(() => {
+          confirmActionModal.value.modal.close()
+          loadTodos()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
 
     const { meta: addMeta, errors, defineInputBinds, resetForm } = useForm({
       validationSchema: yup.object({
@@ -145,6 +164,7 @@ export default {
       menu: [
         { name: 'Add item', action: () => addItemModal.value.modal.toggle() },
         { name: 'Edit item', action: () => editItemModal.value.modal.toggle() },
+        { name: 'Delete item', action: () => confirmActionModal.value.modal.toggle() }
       ]
     })
 
@@ -212,10 +232,12 @@ export default {
       newContentInput,
       addItemModal,
       editItemModal,
+      confirmActionModal,
       newItem,
       editItem,
       addItem,
       updateItem,
+      deleteItem,
       columns,
       contextMenu,
       contextMenuObject,
