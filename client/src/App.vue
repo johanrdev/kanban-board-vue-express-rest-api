@@ -17,6 +17,7 @@
         </transition-group>
       </section>
 
+      <!-- Add new todo -->
       <KanbanModal title="Add item" ref="addItemModal">
         <form @submit.prevent="addItem" class="flex flex-col">
           <input type="text" v-bind="content" v-model="newItem.content" placeholder="Content" autocomplete="off"
@@ -28,8 +29,15 @@
         </form>
       </KanbanModal>
 
+      <!-- Edit todo -->
+      <KanbanModal title="Edit item" ref="editItemModal">
+        <span>Todo ID: {{ contextMenuObject.id }}</span>
+      </KanbanModal>
+
+      <!-- Context menu -->
       <ContextMenu ref="contextMenu" :position="contextMenuObject.position">
-        {{ contextMenuObject.id }}
+        <button v-for="item in contextMenuObject.menu" @click="item.action"
+          class="w-full h-8 mb-1 last:mb-0 bg-indigo-400 text-white rounded transition-all">{{ item.name }}</button>
       </ContextMenu>
     </div>
   </transition>
@@ -53,7 +61,11 @@ export default {
   },
   setup() {
     const addItemModal = ref(null)
+    const editItemModal = ref(null)
+
     const newItem = ref({})
+    const editItem = ref({})
+
     const addItem = () => {
       TodoDataService.createTodo(newItem.value)
         .then(() => {
@@ -111,7 +123,11 @@ export default {
     const contextMenu = ref(null)
     const contextMenuObject = ref({
       id: null,
-      position: { x: 0, y: 0 }
+      position: { x: 0, y: 0 },
+      menu: [
+        { name: 'Add item', action: () => addItemModal.value.modal.toggle() },
+        { name: 'Edit item', action: () => editItemModal.value.modal.toggle() },
+      ]
     })
 
     const loadTodos = () => {
@@ -165,7 +181,9 @@ export default {
       errors,
       content,
       addItemModal,
+      editItemModal,
       newItem,
+      editItem,
       addItem,
       columns,
       contextMenu,
@@ -199,7 +217,7 @@ export default {
 .fade-move,
 .fade-enter-active,
 .fade-leave-active {
-  transition: all .5s ease-in-out;
+  transition: opacity .5s ease-in-out;
 }
 
 .fade-leave-active {
