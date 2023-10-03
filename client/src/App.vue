@@ -1,6 +1,6 @@
 <template lang="html">
   <transition appear name="fade">
-    <div class="flex flex-col max-w-5xl mx-2 lg:mx-auto">
+    <div class="flex flex-col max-w-5xl mx-2 lg:mx-auto" @contextmenu.prevent>
       <header class="my-8 md:mt-12">
         <span class="block text-3xl md:text-4xl text-gray-300 text-center">VueKanbanBoard</span>
       </header>
@@ -12,7 +12,8 @@
       <section class="mt-4 mb-8 grid md:grid-cols-3 gap-4">
         <transition-group appear @before-enter="beforeEnter" @enter="enter" :css="false">
           <KanbanColumn v-for="(column, index) in columns" :key="column.id" :name="column.name" :color="column.color"
-            :status="column.status" :data="column.data" :data-index="index" @change-status="onStatusChanged" />
+            :status="column.status" :data="column.data" :data-index="index" @change-status="onStatusChanged"
+            @open-context-menu="onOpenContextMenu" />
         </transition-group>
       </section>
 
@@ -26,6 +27,10 @@
             :class="{ 'bg-gray-400 text-gray-200 cursor-not-allowed': !meta.valid }">Add</button>
         </form>
       </KanbanModal>
+
+      <ContextMenu ref="contextMenu" :position="contextMenuObject.position">
+        {{ contextMenuObject.id }}
+      </ContextMenu>
     </div>
   </transition>
 </template>
@@ -34,6 +39,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useForm } from 'vee-validate'
 import KanbanColumn from './components/KanbanColumn.vue'
 import KanbanModal from './components/KanbanModal.vue'
+import ContextMenu from './components/ContextMenu.vue'
 import { uuid } from 'vue-uuid'
 import gsap from 'gsap'
 import * as yup from 'yup'
@@ -42,7 +48,8 @@ import TodoDataService from './services/todo.service'
 export default {
   components: {
     KanbanColumn,
-    KanbanModal
+    KanbanModal,
+    ContextMenu
   },
   setup() {
     const addItemModal = ref(null)
@@ -101,8 +108,10 @@ export default {
 
     const items = ref([])
 
-    onMounted(() => {
-      loadTodos()
+    const contextMenu = ref(null)
+    const contextMenuObject = ref({
+      id: null,
+      position: { x: 0, y: 0 }
     })
 
     const loadTodos = () => {
@@ -140,6 +149,17 @@ export default {
       })
     }
 
+    const onOpenContextMenu = (data) => {
+      contextMenuObject.value.id = data.id
+      contextMenuObject.value.position.x = data.x
+      contextMenuObject.value.position.y = data.y
+      contextMenu.value.open()
+    }
+
+    onMounted(() => {
+      loadTodos()
+    })
+
     return {
       meta,
       errors,
@@ -148,6 +168,9 @@ export default {
       newItem,
       addItem,
       columns,
+      contextMenu,
+      contextMenuObject,
+      onOpenContextMenu,
       onStatusChanged,
       beforeEnter,
       enter
