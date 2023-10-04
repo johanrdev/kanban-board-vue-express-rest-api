@@ -20,12 +20,10 @@
       <!-- Add new todo modal -->
       <KanbanModal title="Add item" ref="addItemModal">
         <form @submit.prevent="addItem" class="flex flex-col">
-          <input type="text" v-bind="newContentInput" v-model="newItem.content" placeholder="Content" autocomplete="off"
+          <input type="text" v-model="newItem.content" placeholder="Content" autocomplete="off"
             class="p-2 border rounded" />
-          <span class="text-sm text-red-500 text-right">{{ errors.content }}</span>
 
-          <button type="submit" :disabled="!addMeta.valid" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all"
-            :class="{ 'bg-gray-400 text-gray-200 cursor-not-allowed': !addMeta.valid }">Add</button>
+          <button type="submit" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all">Add</button>
         </form>
       </KanbanModal>
 
@@ -57,10 +55,8 @@
   </transition>
 </template>
 <script>
-import * as yup from 'yup'
 import gsap from 'gsap'
 import { uuid } from 'vue-uuid'
-import { useForm, useField } from 'vee-validate'
 import { computed, onMounted, ref } from 'vue'
 import KanbanColumn from './components/KanbanColumn.vue'
 import KanbanModal from './components/KanbanModal.vue'
@@ -84,7 +80,6 @@ export default {
     const addItem = () => {
       TodoDataService.createTodo(newItem.value)
         .then(() => {
-          resetForm()
           newItem.value = {}
           addItemModal.value.modal.close()
           loadTodos()
@@ -116,45 +111,31 @@ export default {
         })
     }
 
-    const { meta: addMeta, errors, defineInputBinds, resetForm } = useForm({
-      validationSchema: yup.object({
-        content: yup.string().min(3).required()
-      })
-    })
-
-    const newContentInput = defineInputBinds('content', {
-      validateOnInput: true
-    })
-
-    const todo = computed(() => items.value.filter(i => i.status === null))
-    const progress = computed(() => items.value.filter(i => i.status === 'progress'))
-    const complete = computed(() => items.value.filter(i => i.status === 'complete'))
-
     const columns = ref([
       {
         id: uuid.v1(),
         name: 'Todo',
         color: '#6366f1',
         status: null,
-        data: todo
+        data: computed(() => todos.value.filter(i => i.status === null))
       },
       {
         id: uuid.v1(),
         name: 'In Progress',
         color: '#f43f5e',
         status: 'progress',
-        data: progress
+        data: computed(() => todos.value.filter(i => i.status === 'progress'))
       },
       {
         id: uuid.v1(),
         name: 'Complete',
         color: '#10b981',
         status: 'complete',
-        data: complete
+        data: computed(() => todos.value.filter(i => i.status === 'complete'))
       }
     ])
 
-    const items = ref([])
+    const todos = ref([])
 
     const contextMenu = ref(null)
 
@@ -171,7 +152,7 @@ export default {
     const loadTodos = () => {
       TodoDataService.getTodos()
         .then((result) => {
-          items.value = result.data
+          todos.value = result.data
         })
         .catch((error) => {
           console.error(error)
@@ -179,7 +160,7 @@ export default {
     }
 
     const onStatusChanged = (data) => {
-      const item = items.value.find(i => i.id == data.id)
+      const item = todos.value.find(i => i.id == data.id)
       item.status = data.status
 
       TodoDataService.updateTodo(data.id, { content: item.content, status: data.status })
@@ -227,9 +208,6 @@ export default {
     })
 
     return {
-      addMeta,
-      errors,
-      newContentInput,
       addItemModal,
       editItemModal,
       confirmActionModal,
