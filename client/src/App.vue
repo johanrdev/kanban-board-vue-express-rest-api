@@ -19,12 +19,7 @@
 
       <!-- Add new todo modal -->
       <KanbanModal title="Add item" ref="addItemModal">
-        <form @submit.prevent="addItem" class="flex flex-col">
-          <input type="text" v-model="newItem.content" placeholder="Content" autocomplete="off"
-            class="p-2 border rounded" />
-
-          <button type="submit" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all">Add</button>
-        </form>
+        <AddTodoForm @add-todo-complete="onAddTodoComplete"/>
       </KanbanModal>
 
       <!-- Edit todo modal -->
@@ -61,33 +56,24 @@ import { computed, onMounted, ref } from 'vue'
 import KanbanColumn from './components/KanbanColumn.vue'
 import KanbanModal from './components/KanbanModal.vue'
 import ContextMenu from './components/ContextMenu.vue'
+import AddTodoForm from './components/Forms/AddTodoForm.vue'
 import TodoDataService from './services/todo.service'
 
 export default {
   components: {
     KanbanColumn,
     KanbanModal,
-    ContextMenu
-  },
+    ContextMenu,
+    AddTodoForm
+},
   setup() {
     const addItemModal = ref(null)
     const editItemModal = ref(null)
     const confirmActionModal = ref(null)
 
-    const newItem = ref({})
     const editItem = ref({})
 
-    const addItem = () => {
-      TodoDataService.createTodo(newItem.value)
-        .then(() => {
-          newItem.value = {}
-          addItemModal.value.modal.close()
-          loadTodos()
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    }
+    
 
     const updateItem = () => {
       TodoDataService.updateTodo(editItem.value.id, editItem.value)
@@ -181,6 +167,11 @@ export default {
         })
     }
 
+    const onAddTodoComplete = () => {
+      addItemModal.value.modal.toggle()
+      loadTodos()
+    }
+
     const beforeEnter = (el) => {
       el.style.opacity = 0
       el.style.transform = 'translateY(50px)'
@@ -211,9 +202,7 @@ export default {
       addItemModal,
       editItemModal,
       confirmActionModal,
-      newItem,
       editItem,
-      addItem,
       updateItem,
       deleteItem,
       columns,
@@ -222,6 +211,7 @@ export default {
       onOpenContextMenu,
       onStatusChanged,
       onEditModalToggled,
+      onAddTodoComplete,
       beforeEnter,
       enter
     }
