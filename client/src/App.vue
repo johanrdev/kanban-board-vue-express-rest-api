@@ -5,7 +5,7 @@
         <span class="block text-3xl md:text-4xl text-gray-300 text-center">VueKanbanBoard</span>
       </header>
       <nav class="flex justify-center md:justify-end">
-        <button @click="addItemModal.modal.toggle" class="w-12 h-12 bg-indigo-400 text-white rounded transition-all">
+        <button @click="addTodoModal.modal.toggle" class="w-12 h-12 bg-indigo-400 text-white rounded transition-all">
           <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
         </button>
       </nav>
@@ -18,17 +18,17 @@
       </section>
 
       <!-- Add new todo modal -->
-      <KanbanModal title="Add item" ref="addItemModal">
+      <KanbanModal title="Add item" ref="addTodoModal">
         <AddTodoForm @add-todo-complete="onAddTodoComplete" />
       </KanbanModal>
 
       <!-- Edit todo modal -->
-      <KanbanModal title="Edit item" ref="editItemModal">
+      <KanbanModal title="Edit item" ref="editTodoModal">
         <EditTodoForm :id="contextMenuObject.id" @edit-todo-complete="onEditTodoComplete" />
       </KanbanModal>
 
       <!-- Delete todo modal -->
-      <KanbanModal title="Confirm action" ref="confirmActionModal">
+      <KanbanModal title="Confirm action" ref="deleteTodoModal">
         <DeleteTodoForm :id="contextMenuObject.id" @delete-todo-complete="onDeleteTodoComplete" />
       </KanbanModal>
 
@@ -62,10 +62,7 @@ export default {
     DeleteTodoForm
   },
   setup() {
-    const addTodoModal = ref(null)
-    const editTodoModal = ref(null)
-    const deleteTodoModal = ref(null)
-
+    // #region COLUMNS
     const columns = ref([
       {
         id: uuid.v1(),
@@ -89,11 +86,10 @@ export default {
         data: computed(() => todos.value.filter(i => i.status === 'complete'))
       }
     ])
+    // #endregion
 
-    const todos = ref([])
-
+    // #region CONTEXT MENU
     const contextMenu = ref(null)
-
     const contextMenuObject = ref({
       id: null,
       position: { x: 0, y: 0 },
@@ -103,7 +99,14 @@ export default {
         { name: 'Delete item', action: () => deleteTodoModal.value.modal.toggle() }
       ]
     })
+    const onOpenContextMenu = (data) => {
+      contextMenuObject.value.id = data.id
+      contextMenuObject.value.position.x = data.x
+      contextMenuObject.value.position.y = data.y
+      contextMenu.value.open()
+    }
 
+    const todos = ref([])
     const loadTodos = () => {
       TodoDataService.getTodos()
         .then((result) => {
@@ -113,7 +116,9 @@ export default {
           console.error(error)
         })
     }
+    // #endregion
 
+    // #region UPDATE TODO
     const onStatusChanged = (data) => {
       const item = todos.value.find(i => i.id == data.id)
       item.status = data.status
@@ -123,25 +128,36 @@ export default {
           console.error(error)
         })
     }
+    // #endregion
 
+    // #region ADD TODO MODAL
+    const addTodoModal = ref(null)
     const onAddTodoComplete = () => {
       contextMenuObject.value.id = null
       addTodoModal.value.modal.toggle()
       loadTodos()
     }
+    // #endregion
 
+    // #region EDIT TODO MODAL
+    const editTodoModal = ref(null)
     const onEditTodoComplete = () => {
       contextMenuObject.value.id = null
       editTodoModal.value.modal.close()
       loadTodos()
     }
+    // #endregion
 
+    // #region DELETE TODO MODAL
+    const deleteTodoModal = ref(null)
     const onDeleteTodoComplete = () => {
       contextMenuObject.value.id = null
       deleteTodoModal.value.modal.close()
       loadTodos()
     }
+    // #endregion
 
+    // #region ANIMATION HOOKS
     const beforeEnter = (el) => {
       el.style.opacity = 0
       el.style.transform = 'translateY(50px)'
@@ -156,29 +172,23 @@ export default {
         onComplete: done
       })
     }
-
-    const onOpenContextMenu = (data) => {
-      contextMenuObject.value.id = data.id
-      contextMenuObject.value.position.x = data.x
-      contextMenuObject.value.position.y = data.y
-      contextMenu.value.open()
-    }
+    // #endregion
 
     onMounted(() => {
       loadTodos()
     })
 
     return {
-      addItemModal: addTodoModal,
-      editItemModal: editTodoModal,
-      confirmActionModal: deleteTodoModal,
       columns,
       contextMenu,
       contextMenuObject,
       onOpenContextMenu,
       onStatusChanged,
+      addTodoModal,
       onAddTodoComplete,
+      editTodoModal,
       onEditTodoComplete,
+      deleteTodoModal,
       onDeleteTodoComplete,
       beforeEnter,
       enter
