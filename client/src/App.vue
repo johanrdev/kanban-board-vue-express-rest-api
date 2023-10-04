@@ -27,13 +27,9 @@
         <EditTodoForm :id="contextMenuObject.id" @edit-todo-complete="onEditTodoComplete" />
       </KanbanModal>
 
-      <!-- Confirm action modal -->
+      <!-- Delete todo modal -->
       <KanbanModal title="Confirm action" ref="confirmActionModal">
-        <form @submit.prevent="deleteItem" class="flex flex-col">
-          <p class="text-center">Please confirm this action.</p>
-
-          <button type="submit" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all">Confirm</button>
-        </form>
+        <DeleteTodoForm :id="contextMenuObject.id" @delete-todo-complete="onDeleteTodoComplete" />
       </KanbanModal>
 
       <!-- Context menu -->
@@ -53,6 +49,7 @@ import KanbanModal from './components/KanbanModal.vue'
 import ContextMenu from './components/ContextMenu.vue'
 import AddTodoForm from './components/Forms/AddTodoForm.vue'
 import EditTodoForm from './components/Forms/EditTodoForm.vue'
+import DeleteTodoForm from './components/Forms/DeleteTodoForm.vue'
 import TodoDataService from './services/todo.service'
 
 export default {
@@ -61,23 +58,13 @@ export default {
     KanbanModal,
     ContextMenu,
     AddTodoForm,
-    EditTodoForm
+    EditTodoForm,
+    DeleteTodoForm
   },
   setup() {
-    const addItemModal = ref(null)
-    const editItemModal = ref(null)
-    const confirmActionModal = ref(null)
-
-    const deleteItem = () => {
-      TodoDataService.deleteTodo(contextMenuObject.value.id)
-        .then(() => {
-          confirmActionModal.value.modal.close()
-          loadTodos()
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    }
+    const addTodoModal = ref(null)
+    const editTodoModal = ref(null)
+    const deleteTodoModal = ref(null)
 
     const columns = ref([
       {
@@ -111,9 +98,9 @@ export default {
       id: null,
       position: { x: 0, y: 0 },
       menu: [
-        { name: 'Add item', action: () => addItemModal.value.modal.toggle() },
-        { name: 'Edit item', action: () => editItemModal.value.modal.toggle() },
-        { name: 'Delete item', action: () => confirmActionModal.value.modal.toggle() }
+        { name: 'Add item', action: () => addTodoModal.value.modal.toggle() },
+        { name: 'Edit item', action: () => editTodoModal.value.modal.toggle() },
+        { name: 'Delete item', action: () => deleteTodoModal.value.modal.toggle() }
       ]
     })
 
@@ -138,12 +125,20 @@ export default {
     }
 
     const onAddTodoComplete = () => {
-      addItemModal.value.modal.toggle()
+      contextMenuObject.value.id = null
+      addTodoModal.value.modal.toggle()
       loadTodos()
     }
 
     const onEditTodoComplete = () => {
-      editItemModal.value.modal.close()
+      contextMenuObject.value.id = null
+      editTodoModal.value.modal.close()
+      loadTodos()
+    }
+
+    const onDeleteTodoComplete = () => {
+      contextMenuObject.value.id = null
+      deleteTodoModal.value.modal.close()
       loadTodos()
     }
 
@@ -174,10 +169,9 @@ export default {
     })
 
     return {
-      addItemModal,
-      editItemModal,
-      confirmActionModal,
-      deleteItem,
+      addItemModal: addTodoModal,
+      editItemModal: editTodoModal,
+      confirmActionModal: deleteTodoModal,
       columns,
       contextMenu,
       contextMenuObject,
@@ -185,6 +179,7 @@ export default {
       onStatusChanged,
       onAddTodoComplete,
       onEditTodoComplete,
+      onDeleteTodoComplete,
       beforeEnter,
       enter
     }

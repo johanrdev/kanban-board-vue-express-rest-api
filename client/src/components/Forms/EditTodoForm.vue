@@ -15,7 +15,7 @@ export default {
     const editTodo = ref({})
 
     const updateTodo = () => {
-      TodoDataService.updateTodo(editTodo.value.id, editTodo.value)
+      TodoDataService.updateTodo(props.id, editTodo.value)
         .then(() => {
           editTodo.value = {}
           emit('editTodoComplete')
@@ -25,8 +25,8 @@ export default {
         })
     }
 
-    watch(() => props.id, (newVal, oldVal) => {
-      if (props.id && newVal !== oldVal) {
+    watch(() => props.id, () => {
+      if (props.id) {
         TodoDataService.getTodo(props.id)
           .then((result) => {
             editTodo.value.id = result.data.id
