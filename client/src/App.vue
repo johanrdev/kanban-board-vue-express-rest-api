@@ -19,17 +19,12 @@
 
       <!-- Add new todo modal -->
       <KanbanModal title="Add item" ref="addItemModal">
-        <AddTodoForm @add-todo-complete="onAddTodoComplete"/>
+        <AddTodoForm @add-todo-complete="onAddTodoComplete" />
       </KanbanModal>
 
       <!-- Edit todo modal -->
-      <KanbanModal title="Edit item" ref="editItemModal" @modal-toggled="onEditModalToggled">
-        <form @submit.prevent="updateItem" class="flex flex-col">
-          <input type="text" v-model="editItem.content" placeholder="Content" autocomplete="off"
-            class="p-2 border rounded" />
-
-          <button type="submit" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all">Update</button>
-        </form>
+      <KanbanModal title="Edit item" ref="editItemModal">
+        <EditTodoForm :id="contextMenuObject.id" @edit-todo-complete="onEditTodoComplete" />
       </KanbanModal>
 
       <!-- Confirm action modal -->
@@ -57,6 +52,7 @@ import KanbanColumn from './components/KanbanColumn.vue'
 import KanbanModal from './components/KanbanModal.vue'
 import ContextMenu from './components/ContextMenu.vue'
 import AddTodoForm from './components/Forms/AddTodoForm.vue'
+import EditTodoForm from './components/Forms/EditTodoForm.vue'
 import TodoDataService from './services/todo.service'
 
 export default {
@@ -64,27 +60,13 @@ export default {
     KanbanColumn,
     KanbanModal,
     ContextMenu,
-    AddTodoForm
-},
+    AddTodoForm,
+    EditTodoForm
+  },
   setup() {
     const addItemModal = ref(null)
     const editItemModal = ref(null)
     const confirmActionModal = ref(null)
-
-    const editItem = ref({})
-
-    
-
-    const updateItem = () => {
-      TodoDataService.updateTodo(editItem.value.id, editItem.value)
-        .then(() => {
-          editItemModal.value.modal.close()
-          loadTodos()
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    }
 
     const deleteItem = () => {
       TodoDataService.deleteTodo(contextMenuObject.value.id)
@@ -155,20 +137,13 @@ export default {
         })
     }
 
-    const onEditModalToggled = () => {
-      TodoDataService.getTodo(contextMenuObject.value.id)
-        .then((result) => {
-          editItem.value.id = result.data.id
-          editItem.value.content = result.data.content
-          editItem.value.status = result.data.status
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    }
-
     const onAddTodoComplete = () => {
       addItemModal.value.modal.toggle()
+      loadTodos()
+    }
+
+    const onEditTodoComplete = () => {
+      editItemModal.value.modal.close()
       loadTodos()
     }
 
@@ -202,16 +177,14 @@ export default {
       addItemModal,
       editItemModal,
       confirmActionModal,
-      editItem,
-      updateItem,
       deleteItem,
       columns,
       contextMenu,
       contextMenuObject,
       onOpenContextMenu,
       onStatusChanged,
-      onEditModalToggled,
       onAddTodoComplete,
+      onEditTodoComplete,
       beforeEnter,
       enter
     }
