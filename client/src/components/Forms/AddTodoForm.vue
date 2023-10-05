@@ -30,20 +30,30 @@ export default {
     const v$ = useVuelidate(validationRules, newTodo)
 
     const addTodo = () => {
-      v$.value.$validate()
-        .then((isValid) => {
-          if (isValid) {
-            TodoDataService.createTodo(newTodo.value)
+      TodoDataService.createTodo(newTodo.value)
               .then(() => {
                 v$.value.$reset()
                 newTodo.value = {}
                 emit('addTodoComplete')
               })
               .catch((error) => {
-                console.error(error)
+                console.error(error.response.data.message)
               })
-          }
-        })
+
+      // v$.value.$validate()
+      //   .then((isValid) => {
+      //     if (isValid) {
+      //       TodoDataService.createTodo(newTodo.value)
+      //         .then(() => {
+      //           v$.value.$reset()
+      //           newTodo.value = {}
+      //           emit('addTodoComplete')
+      //         })
+      //         .catch((error) => {
+      //           console.error(error)
+      //         })
+      //     }
+      //   })
     }
 
     return {

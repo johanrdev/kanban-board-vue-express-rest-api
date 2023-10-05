@@ -10,8 +10,14 @@ module.exports = (Sequelize, sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true,
-        len: [3, 255]
+        notEmpty: {
+          args: true,
+          msg: 'Content cannot be empty.'
+        },
+        len: {
+          args: [3, 255],
+          msg: 'Content must be between 3 - 255 characters in length.'
+        }
       }
     },
     status: {
@@ -19,8 +25,14 @@ module.exports = (Sequelize, sequelize) => {
       allowNull: true,
       defaultValue: null,
       validate: {
-        notEmpty: true,
-        isIn: [[null, 'progress', 'complete']]
+        notEmpty: {
+          args: true,
+          msg: 'Status cannot be an empty string.'
+        },
+        isIn: {
+          args: [[null, 'progress', 'complete']],
+          msg: 'Status must be set to either null, "progress", or "complete".'
+        }
       }
     }
   })
