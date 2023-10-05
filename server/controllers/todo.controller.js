@@ -75,10 +75,10 @@ exports.update = (req, res) => {
         })
       }
     })
-    .catch(() => {
+    .catch((error) => {
       res.status(500)
         .send({
-          message: 'An error occurred while trying to update the todo item.'
+          message: error.message || 'An error occurred while trying to update the todo item.'
         })
     })
 }
