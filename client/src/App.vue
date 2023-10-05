@@ -17,7 +17,7 @@
         </transition-group>
       </section>
 
-      <!-- Add new todo modal -->
+      <!-- Add todo modal -->
       <KanbanModal title="Add item" ref="addTodoModal">
         <AddTodoForm @add-todo-complete="onAddTodoComplete" />
       </KanbanModal>

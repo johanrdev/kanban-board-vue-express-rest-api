@@ -9,8 +9,8 @@
         class="border border-l-8 rounded bg-white p-2 mb-1 last:mb-0 left-0 right-0 cursor-move select-none"
         :style="{ borderLeftColor: color }" v-if="data.length" draggable="true" @dragstart="startDrag($event, item)"
         @contextmenu="openContextMenu($event, item.id)">
-        <span class="block mb-4">{{ item.content }}</span>
-        <span class="block text-xs text-right text-gray-400">{{ item.id }}</span>
+        <span class="block text-md text-gray-950 mb-4">{{ item.content }}</span>
+        <span class="block text-xs text-gray-400 text-right">{{ item.id }}</span>
       </li>
       <li class="border border-l-8 rounded bg-white p-2 mb-1 last:mb-0 left-0 right-0" v-else>No data</li>
     </transition-group>
