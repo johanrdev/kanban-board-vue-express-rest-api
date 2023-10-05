@@ -22,7 +22,7 @@
   </transition>
 </template>
 <script>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 export default {
   props: ['title'],
@@ -35,6 +35,18 @@ export default {
 
         emit('modalToggled', modal.value.show)
       }
+    })
+
+    onMounted(() => {
+      window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && modal.value.show) {
+          modal.value.close()
+        }
+      })
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('keydown')
     })
 
     return {

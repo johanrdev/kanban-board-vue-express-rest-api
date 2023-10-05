@@ -201,7 +201,7 @@ export default {
 
 #app {
   font-family: Poppins;
-  height: 200vh;
+  height: 100vh;
 }
 
 .fade-enter-from,
