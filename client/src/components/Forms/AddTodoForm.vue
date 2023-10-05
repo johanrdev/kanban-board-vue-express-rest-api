@@ -13,14 +13,18 @@
 import { computed, ref } from 'vue'
 import TodoDataService from '../../services/todo.service'
 import { useVuelidate } from '@vuelidate/core'
-import { required, minLength, maxLength } from '@vuelidate/validators'
+import { required, minLength, maxLength, helpers } from '@vuelidate/validators'
 
 export default {
   setup(_, { emit }) {
     const newTodo = ref({})
     const validationRules = computed(() => {
       return {
-        content: { required, minLength: minLength(3), maxLength: maxLength(255) }
+        content: { 
+          required: helpers.withMessage('This field is required', required), 
+          minLength: minLength(3), 
+          maxLength: maxLength(255) 
+        }
       }
     })
     const v$ = useVuelidate(validationRules, newTodo)
