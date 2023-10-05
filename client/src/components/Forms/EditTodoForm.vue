@@ -1,27 +1,44 @@
 <template lang="html">
   <form @submit.prevent="updateTodo" class="flex flex-col">
     <input type="text" v-model="editTodo.content" placeholder="Content" autocomplete="off" class="p-2 border rounded" />
+    <span class="text-sm text-red-500" v-if="v$.$error">
+      {{ v$.$errors[0].$message }}
+    </span>
 
     <button type="submit" class="p-2 mt-2 bg-emerald-500 text-white rounded transition-all">Update</button>
   </form>
 </template>
 <script>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import TodoDataService from '../../services/todo.service'
+import { useVuelidate } from '@vuelidate/core'
+import { required, minLength, maxLength } from '@vuelidate/validators'
 
 export default {
   props: ['id'],
   setup(props, { emit }) {
     const editTodo = ref({})
+    const validationRules = computed(() => {
+      return {
+        content: { required, minLength: minLength(3), maxLength: maxLength(255) }
+      }
+    })
+    const v$ = useVuelidate(validationRules, editTodo)
 
     const updateTodo = () => {
-      TodoDataService.updateTodo(props.id, editTodo.value)
-        .then(() => {
-          editTodo.value = {}
-          emit('editTodoComplete')
-        })
-        .catch((error) => {
-          console.error(error)
+      v$.value.$validate()
+        .then((isValid) => {
+          if (isValid) {
+            TodoDataService.updateTodo(props.id, editTodo.value)
+              .then(() => {
+                v$.value.$reset()
+                editTodo.value = {}
+                emit('editTodoComplete')
+              })
+              .catch((error) => {
+                console.error(error)
+              })
+          }
         })
     }
 
@@ -41,7 +58,8 @@ export default {
 
     return {
       editTodo,
-      updateTodo
+      updateTodo,
+      v$
     }
   }
 }
