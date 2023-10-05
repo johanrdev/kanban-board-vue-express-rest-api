@@ -47,7 +47,7 @@ exports.create = (req, res) => {
       })
   }
 
-  Todo.create({ content: req.body.content })
+  Todo.create({ content: req.body.content, status: req.body.status !== null ? req.body.status : null })
     .then((data) => {
       res.send(data)
     })

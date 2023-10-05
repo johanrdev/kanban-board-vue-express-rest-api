@@ -8,12 +8,20 @@ module.exports = (Sequelize, sequelize) => {
     },
     content: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [3, 255]
+      }
     },
     status: {
       type: Sequelize.STRING,
       allowNull: true,
-      defaultValue: null
+      defaultValue: null,
+      validate: {
+        notEmpty: true,
+        isIn: [[null, 'progress', 'complete']]
+      }
     }
   })
 
